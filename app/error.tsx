@@ -8,6 +8,7 @@ import type { ErrorParams } from "@/types/next";
 import Link from "next/link";
 
 export default function RouteError({ error, reset }: ErrorParams) {
+  console.error(error);
   return (
     <Layout className="flex h-screen max-w-md flex-col items-start justify-center gap-3">
       <Typography variant="code">400</Typography>
