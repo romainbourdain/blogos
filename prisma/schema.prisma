@@ -17,6 +17,10 @@ model User {
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
+  articles      Article[]
+  comments      Comment[]
+  roles         Role[]
+  badges        Badge[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,4 +79,57 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model Article {
+  id          String     @id @default(cuid())
+  title       String
+  content     String
+  published   Boolean    @default(false)
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  tags        Tags[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  articleId String
+  authorId  String
+  article   Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  users     User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Badge {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  users     User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tags {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  articles  Article[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
