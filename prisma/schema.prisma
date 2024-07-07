@@ -21,6 +21,8 @@ model User {
   comments      Comment[]
   roles         Role[]
   badges        Badge[]
+  bookmarks     Bookmark[]
+  reactions     Reaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -90,6 +92,8 @@ model Article {
   author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments    Comment[]
   tags        Tags[]
+  bookmarks   Bookmark[]
+  reactions   Reaction[]
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -132,4 +136,28 @@ model Tags {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  articleId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reaction {
+  id          String   @id @default(cuid())
+  type        String
+  userId      String
+  articleId   String?
+  commentId   String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article     Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
