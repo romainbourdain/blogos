@@ -24,8 +24,8 @@ model User {
   bookmarks     Bookmark[]
   reactions     Reaction[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Account {
@@ -40,12 +40,10 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   @@id([provider, providerAccountId])
 }
 
@@ -55,15 +53,14 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
-
   @@id([identifier, token])
 }
 
@@ -77,29 +74,27 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
 }
 
 model Article {
-  id          String     @id @default(cuid())
-  title       String
-  content     String
-  published   Boolean    @default(false)
-  authorId    String
-  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments    Comment[]
-  tags        Tags[]
-  bookmarks   Bookmark[]
-  reactions   Reaction[]
+  id              String     @id @default(cuid())
+  title           String
+  content         String
+  published       Boolean    @default(false)
+  authorId        String
+  author          User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments        Comment[]
+  tags            Tags[]
+  bookmarks       Bookmark[]
+  reactions       Reaction[]
   backgroundImage String?
-  previewImage String?
-  images      String[]
-
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  previewImage    String?
+  images          String[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 }
 
 model Comment {
@@ -107,8 +102,8 @@ model Comment {
   content   String
   articleId String
   authorId  String
-  article   Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -136,6 +131,8 @@ model Tags {
   id        String   @id @default(cuid())
   name      String   @unique
   articles  Article[]
+  lessons   Lesson[]
+  chapters  Chapter[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -161,6 +158,54 @@ model Reaction {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   article     Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Formation {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  image       String
+  lessons     Lesson[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lesson {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  formationId String
+  formation   Formation @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  chapters    Chapter[]
+  tags        Tags[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Chapter {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  images      String[]
+  tags        Tags[]
+  references  Reference[]
+  lessonId    String
+  lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Reference {
+  id          String   @id @default(cuid())
+  title       String
+  url         String
+  chapterId   String
+  chapter     Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
